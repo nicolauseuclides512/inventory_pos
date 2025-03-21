@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/api_service.dart';
 import '../../home/screens/home_screen.dart';
@@ -17,35 +19,52 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   Future<void> _login() async {
+    // Validasi input
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = "Email dan password wajib diisi!";
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final response = await ApiService().post("/login", {
-        "email": _emailController.text,
-        "password": _passwordController.text,
-      });
+      final response = await http.post(
+        Uri.parse("http://127.0.0.1:8000/api/login"), // Ubah sesuai dengan server
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "email": _emailController.text,
+          "password": _passwordController.text,
+        }),
+      );
 
-      if (response.statusCode == 200) {
-        // Simpan token ke SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString("token", response.data["token"]);
+      final data = jsonDecode(response.body);
+      if (data["statusCode"] == "200") {
+        if (data.containsKey("token")) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString("token", data["token"]);
 
-        // Pindah ke home screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          setState(() {
+            _errorMessage = "Login gagal. Periksa kembali email atau password.";
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = "Login gagal. Cek email atau password.";
+          _errorMessage = "Login gagal. Server mengembalikan kode ${response.statusCode}";
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = "Terjadi kesalahan: $e";
+        _errorMessage = "Terjadi kesalahan jaringan: ${e.toString()}";
       });
     } finally {
       setState(() {

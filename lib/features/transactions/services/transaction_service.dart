@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/transaction.dart';
 
 class TransactionService {
-  final String baseUrl = "http://10.191.1.203:8000/api";
+  final String baseUrl = "http://127.0.0.1:8000/api";
 
   Future<List<TransactionModel>> fetchTransactions() async {
     final response = await http.get(Uri.parse('$baseUrl/transactions'));

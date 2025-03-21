@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/log.dart';
 
 class LogService {
-  final String baseUrl = "http://10.191.1.203:8000/api";
+  final String baseUrl = "http://127.0.0.1:8000/api";
 
   Future<List<ActivityLog>> fetchLogs({String? searchQuery, DateTime? startDate, DateTime? endDate}) async {
     // 🔹 Tambahkan query parameters ke URL jika ada

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/refund.dart';
 
 class RefundService {
-  final String baseUrl = "http://10.191.1.203:8000/api";
+  final String baseUrl = "http://127.0.0.1:8000/api";
 
   Future<List<RefundModel>> fetchRefunds() async {
     final response = await http.get(Uri.parse('$baseUrl/refunds'));

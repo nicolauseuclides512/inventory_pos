@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/report.dart';
 
 class ReportService {
-  final String baseUrl = "http://10.191.1.203:8000/api";
+  final String baseUrl = "http://127.0.0.1:8000/api";
 
   // 🔹 Ambil laporan transaksi berdasarkan rentang tanggal
   Future<ReportModel> fetchSalesReport(String startDate, String endDate) async {
